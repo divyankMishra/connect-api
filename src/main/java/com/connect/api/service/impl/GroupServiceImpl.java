@@ -18,10 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class GroupServiceImpl implements GroupService {
@@ -54,7 +51,8 @@ public class GroupServiceImpl implements GroupService {
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
         Set<String> membersToBeAdded = new HashSet<>();
         membersToBeAdded.add(currentUserName);
-        if(CollectionUtils.isNotEmpty(groupPayloadDto.getMemberUsernames())) membersToBeAdded.addAll(groupPayloadDto.getMemberUsernames());
+        if (CollectionUtils.isNotEmpty(groupPayloadDto.getMemberUsernames()))
+            membersToBeAdded.addAll(groupPayloadDto.getMemberUsernames());
         Group group = Group.builder()
                 .createdAt(new Date())
                 .admin(userRepository.findByUsername(currentUserName))
@@ -64,7 +62,7 @@ public class GroupServiceImpl implements GroupService {
                 .build();
         Group savedGroup = groupRepository.save(group);
         GroupDto groupDto = ConverterUtil.getGroupDto(savedGroup);
-        groupDto.setMembers(savedGroup.getMembers().stream().map(UserMinDto::new).toList());
+        groupDto.setMembers(getMembers(savedGroup));
         return groupDto;
     }
 
@@ -72,7 +70,33 @@ public class GroupServiceImpl implements GroupService {
     public GroupDto getGroup(Long id) {
         Group group = groupRepository.findById(id).orElseThrow();
         GroupDto groupDto = ConverterUtil.getGroupDto(group);
-        groupDto.setMembers(group.getMembers().stream().map(UserMinDto::new).toList());
+        groupDto.setMembers(getMembers(group));
         return groupDto;
+    }
+
+    @Override
+    public GroupDto updateGroup(GroupPayloadDto groupPayloadDto, Long id) {
+        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Group group = groupRepository.findById(id).orElseThrow();
+        if (!userRepository.findByUsername(currentUserName).equals(group.getAdmin()))
+            throw new RuntimeException("Non Admin user can not edit group.");
+        group.setName(groupPayloadDto.getName());
+        if (groupPayloadDto.getDescription() != null) group.setDescription(groupPayloadDto.getDescription());
+        Group savedGroup = groupRepository.save(group);
+        GroupDto groupDto = ConverterUtil.getGroupDto(savedGroup);
+        groupDto.setMembers(getMembers(group));
+        return groupDto;
+    }
+
+    @Override
+    public void deleteGroup(Long id) {
+        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Group group = groupRepository.findById(id).orElseThrow();
+        if(!userRepository.findByUsername(currentUserName).equals(group.getAdmin())) throw new RuntimeException("Only Admin can remove group!");
+        groupRepository.delete(group);
+    }
+
+    private List<UserMinDto> getMembers(Group group) {
+        return group.getMembers().stream().map(UserMinDto::new).toList();
     }
 }

@@ -11,4 +11,8 @@ public interface GroupService {
     GroupDto createGroup(GroupPayloadDto groupPayloadDto);
 
     GroupDto getGroup(Long id);
+
+    GroupDto updateGroup(GroupPayloadDto groupPayloadDto, Long id);
+
+    void deleteGroup(Long id);
 }
