@@ -9,4 +9,5 @@ public interface UserService extends UserDetailsService {
     boolean existsByUsernameEquals(String username);
 
     boolean existsByEmailEqualsIgnoreCase(String email);
+
 }

@@ -3,9 +3,11 @@ package com.connect.api.controller;
 import com.connect.api.dto.payload.request.PostPayloadDto;
 import com.connect.api.dto.post.PostDto;
 import com.connect.api.service.PostService;
+import com.connect.api.util.ErrorUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,14 +35,16 @@ public class PostController {
         return postService.getPost(id);
     }
 
-    @PostMapping
-    ResponseEntity<PostDto> createPost(@Valid @RequestBody PostPayloadDto postPayloadDto) {
+    @PostMapping//@TODO Have to manage payload validation in all controllers.
+    ResponseEntity<Object> createPost(@Valid @RequestBody PostPayloadDto postPayloadDto, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
         return new ResponseEntity<>(postService.createPost(postPayloadDto), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}")
-    PostDto updatePost(@Valid @RequestBody PostPayloadDto postPayloadDto, @PathVariable(name = "id") Long id) {
-        return postService.updatePost(postPayloadDto, id);
+    ResponseEntity<Object> updatePost(@Valid @RequestBody PostPayloadDto postPayloadDto,BindingResult bindingResult, @PathVariable(name = "id") Long id) {
+        if(bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
+        return new ResponseEntity<>(postService.updatePost(postPayloadDto, id), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")

@@ -1,5 +1,6 @@
 package com.connect.api.service.impl;
 
+import com.connect.api.dto.payload.response.LikeResponseDto;
 import com.connect.api.dto.payload.response.PageResponseDto;
 import com.connect.api.dto.post.LikeDto;
 import com.connect.api.model.post.Like;
@@ -41,6 +42,11 @@ public class LikeServiceImpl implements LikeService {
         Page<Like> page = likeRepository.findLikesByPost_Id(postId, pageableReq);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<Like> like = likeRepository.findLikesByPost_IdAndUser_Username(postId, username);
+        PageResponseDto<LikeDto> pageResponseDto = getLikeDtoPageResponseDto(page, like);
+        return pageResponseDto;
+    }
+
+    private PageResponseDto<LikeDto> getLikeDtoPageResponseDto(Page<Like> page, Optional<Like> like) {
         PageResponseDto<LikeDto> pageResponseDto = new PageResponseDto<>(page.isLast(),
                 like.isPresent(),
                 page.getTotalElements(),
@@ -71,7 +77,9 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public Long getLikeCount(Long postId) {
-        return likeRepository.countLikesByPost_Id(postId);
+    public LikeResponseDto getLikeCount(Long postId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Like> like = likeRepository.findLikesByPost_IdAndUser_Username(postId, username);
+        return new LikeResponseDto(like.isPresent(), likeRepository.countLikesByPost_Id(postId));
     }
 }

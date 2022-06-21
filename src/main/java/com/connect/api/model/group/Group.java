@@ -1,12 +1,18 @@
 package com.connect.api.model.group;
 
 import com.connect.api.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity(name = "group_table")
 public class Group {
     @Id

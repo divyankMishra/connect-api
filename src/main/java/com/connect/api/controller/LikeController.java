@@ -27,15 +27,14 @@ public class LikeController {
     }
 
     @GetMapping("/count")
-    Long getLikeCount(@PathVariable(name = "postId") Long postId) {
+    LikeResponseDto getLikeCount(@PathVariable(name = "postId") Long postId) {
         return likeService.getLikeCount(postId);
     }
 
 
     @PostMapping("/like")
     LikeResponseDto addRemoveLike(@PathVariable(name = "postId") Long postId) {
-        return new LikeResponseDto(likeService.like(postId), likeService.getLikeCount(postId));
+        likeService.like(postId);
+        return likeService.getLikeCount(postId);
     }
-
-
 }

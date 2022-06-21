@@ -38,4 +38,5 @@ public class UserServiceImpl implements UserService {
     public boolean existsByEmailEqualsIgnoreCase(String email) {
         return userRepository.existsByEmailEqualsIgnoreCase(email);
     }
+
 }

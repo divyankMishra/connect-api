@@ -3,9 +3,11 @@ package com.connect.api.controller;
 import com.connect.api.dto.payload.request.CommentPayloadDto;
 import com.connect.api.dto.post.CommentDto;
 import com.connect.api.service.CommentService;
+import com.connect.api.util.ErrorUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,13 +30,15 @@ public class CommentController {
     }
 
     @PostMapping
-    CommentDto createComment(@Valid @RequestBody CommentPayloadDto commentPayloadDto, @PathVariable(name = "postId") Long id) {
-        return commentService.createComment(id, commentPayloadDto);
+    ResponseEntity<Object> createComment(@Valid @RequestBody CommentPayloadDto commentPayloadDto, BindingResult bindingResult, @PathVariable(name = "postId") Long id) {
+        if(bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
+        return new ResponseEntity<>(commentService.createComment(id, commentPayloadDto),HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{commentid}")
-    CommentDto updateComment(@Valid @RequestBody CommentPayloadDto commentPayloadDto, @PathVariable(name = "postId") Long id, @PathVariable(name = "commentid") Long commentId) {
-        return commentService.updatePostComment(id, commentId, commentPayloadDto);
+    ResponseEntity<Object> updateComment(@Valid @RequestBody CommentPayloadDto commentPayloadDto,BindingResult bindingResult, @PathVariable(name = "postId") Long id, @PathVariable(name = "commentid") Long commentId) {
+        if(bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
+        return new ResponseEntity<>(commentService.updatePostComment(id, commentId, commentPayloadDto),HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{commentid}")

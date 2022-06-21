@@ -1,5 +1,6 @@
 package com.connect.api.service;
 
+import com.connect.api.dto.payload.response.LikeResponseDto;
 import com.connect.api.dto.payload.response.PageResponseDto;
 import com.connect.api.dto.post.LikeDto;
 
@@ -9,5 +10,5 @@ public interface LikeService {
     boolean like(Long postId);
 
 
-    Long getLikeCount(Long postId);
+    LikeResponseDto getLikeCount(Long postId);
 }

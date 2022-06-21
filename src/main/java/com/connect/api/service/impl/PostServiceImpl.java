@@ -2,12 +2,12 @@ package com.connect.api.service.impl;
 
 import com.connect.api.dto.payload.request.PostPayloadDto;
 import com.connect.api.dto.post.PostDto;
-import com.connect.api.dto.post.UserMinDto;
 import com.connect.api.model.post.Post;
 import com.connect.api.repository.GroupRepository;
 import com.connect.api.repository.PostRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.PostService;
+import com.connect.api.util.ConverterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,12 +31,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto getPost(Long id) {
-        return getPostDto(postRepository.findById(id).orElseThrow());
+        return ConverterUtil.getPostDto(postRepository.findById(id).orElseThrow());
     }
 
     @Override
     public List<PostDto> getAllPosts() {
-        return postRepository.findAll().stream().map(post -> getPostDto(post)).toList();
+        return postRepository.findAll().stream().map(ConverterUtil::getPostDto).toList();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class PostServiceImpl implements PostService {
                         : groupRepository.findById(postPayloadDto.getGroupId()).orElse(null))
                 .user(userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()))
                 .build();
-        return getPostDto(postRepository.save(post));
+        return ConverterUtil.getPostDto(postRepository.save(post));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class PostServiceImpl implements PostService {
         if (postPayloadDto.getTitle() != null) post.setTitle(postPayloadDto.getTitle());
         if (postPayloadDto.getDescription() != null) post.setDescription(postPayloadDto.getDescription());
         post.setUpdatedAt(new Date());
-        return getPostDto(postRepository.save(post));
+        return ConverterUtil.getPostDto(postRepository.save(post));
     }
 
 
@@ -73,24 +73,5 @@ public class PostServiceImpl implements PostService {
 
     private boolean isOwnerUser(Post post) {
         return post.getUser().equals(userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
-    }
-
-    private PostDto getPostDto(Post post) {
-        return new PostDto(post.getId(),
-                post.getTitle(),
-                post.getDescription(),
-                post.getCreatedAt(),
-                post.getUpdatedAt(),
-                new UserMinDto(
-                        post.getUser().getUsername(),
-                        post.getUser().getFirstname(),
-                        post.getUser().getLastname()),
-                post.getGroup() != null
-                        ? post.getGroup().getId()
-                        : null,
-                post.getGroup() != null
-                        ? post.getGroup().getName()
-                        : null
-        );
     }
 }
