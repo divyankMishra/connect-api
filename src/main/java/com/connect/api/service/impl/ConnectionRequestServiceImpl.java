@@ -4,8 +4,10 @@ import com.connect.api.dto.connection.ConnectionRequestDto;
 import com.connect.api.dto.payload.request.ConnectionRequestPayloadDto;
 import com.connect.api.dto.payload.response.PageResponseDto;
 import com.connect.api.model.User;
+import com.connect.api.model.connection.Connection;
 import com.connect.api.model.connection.ConnectionRequest;
 import com.connect.api.model.connection.Status;
+import com.connect.api.repository.ConnectionRepository;
 import com.connect.api.repository.ConnectionRequestRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.ConnectionRequestService;
@@ -27,14 +29,16 @@ import java.util.List;
 @Service
 public class ConnectionRequestServiceImpl implements ConnectionRequestService {
 
-    ConnectionRequestRepository connectionRequestRepository;
+    private final ConnectionRequestRepository connectionRequestRepository;
 
-    UserRepository userRepository;
+    private final ConnectionRepository connectionRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ConnectionRequestServiceImpl(ConnectionRequestRepository connectionRequestRepository, UserRepository userRepository) {
+    public ConnectionRequestServiceImpl(ConnectionRequestRepository connectionRequestRepository, UserRepository userRepository, ConnectionRepository connectionRepository) {
         this.connectionRequestRepository = connectionRequestRepository;
         this.userRepository = userRepository;
+        this.connectionRepository = connectionRepository;
     }
 
     @Override
@@ -67,6 +71,32 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
     }
 
     @Override
+    public boolean connectionRequestAction(Boolean accept, Long id) {
+        ConnectionRequest connectionRequest = connectionRequestRepository.findById(id).orElseThrow();
+        User user = userRepository.findByUsername(getUsername());
+        if (!connectionRequest.getReceiver().equals(user))
+            throw new RuntimeException("Only receiver can accept request.");
+        if (accept) {
+            Connection connection = Connection.builder()
+                    .user(connectionRequest.getSender())
+                    .connection(connectionRequest.getReceiver())
+                    .createdAt(new Date())
+                    .build();
+            Connection reverseConnection = Connection.builder()
+                    .user(connectionRequest.getReceiver())
+                    .connection(connectionRequest.getSender())
+                    .createdAt(new Date())
+                    .build();
+            //@TODO Maybe we can save only one way and during lookup we check both column.
+            connectionRepository.saveAll(Arrays.asList(connection, reverseConnection));
+            return true;
+        }
+        //@TODO Maybe I can try doing like publish events and create notifications for such scenarios. Like request accepted.
+        connectionRequestRepository.delete(connectionRequest);
+        return false;
+    }
+
+    @Override
     public PageResponseDto<ConnectionRequestDto> getConnectionRequests(int page, int size, String[] sort) {
         return getConnectionRequestDtoPageResponseDto(connectionRequestRepository.findByReceiver_Username(getUsername(), getPageable(page, size, sort)), true);
     }
@@ -78,8 +108,7 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
                     String[] params = sortEl.contains(";") ? sortEl.split(";") : new String[]{sortEl, "desc"};
                     return new Sort.Order(Sort.Direction.fromString(params[1]), params[0]);
                 }).toList();
-        Pageable pageReq = PageRequest.of(page, size, Sort.by(sortOrder));
-        return pageReq;
+        return PageRequest.of(page, size, Sort.by(sortOrder));
     }
 
     private String getUsername() {
@@ -92,13 +121,12 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
     }
 
     private PageResponseDto<ConnectionRequestDto> getConnectionRequestDtoPageResponseDto(Page<ConnectionRequest> page, boolean populateSender) {
-        PageResponseDto<ConnectionRequestDto> pageResponseDto = new PageResponseDto<>(page.isLast(),
+        return new PageResponseDto<>(page.isLast(),
                 null,
                 page.getTotalElements(),
                 (long) page.getNumberOfElements(),
                 (long) page.getTotalPages(),
                 (long) page.getNumber(),
                 page.getContent().stream().map(content -> ConverterUtil.getConnectionRequestDto(populateSender, content)).toList());
-        return pageResponseDto;
     }
 }

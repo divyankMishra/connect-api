@@ -9,9 +9,9 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = DuplicateUsernameValidator.class)
 public @interface DuplicateUsername {
-    public String message() default "This username already exists!";
+    String message() default "This username already exists!";
 
-    public Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-    public Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }

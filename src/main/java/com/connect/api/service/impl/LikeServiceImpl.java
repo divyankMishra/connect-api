@@ -42,12 +42,11 @@ public class LikeServiceImpl implements LikeService {
         Page<Like> page = likeRepository.findLikesByPost_Id(postId, pageableReq);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<Like> like = likeRepository.findLikesByPost_IdAndUser_Username(postId, username);
-        PageResponseDto<LikeDto> pageResponseDto = getLikeDtoPageResponseDto(page, like);
-        return pageResponseDto;
+        return getLikeDtoPageResponseDto(page, like);
     }
 
     private PageResponseDto<LikeDto> getLikeDtoPageResponseDto(Page<Like> page, Optional<Like> like) {
-        PageResponseDto<LikeDto> pageResponseDto = new PageResponseDto<>(page.isLast(),
+        return new PageResponseDto<>(page.isLast(),
                 like.isPresent(),
                 page.getTotalElements(),
                 (long) page.getNumberOfElements(),
@@ -55,7 +54,6 @@ public class LikeServiceImpl implements LikeService {
                 (long) page.getNumber(),
                 page.getContent().stream().map(ConverterUtil::getLikeDto).toList()
         );
-        return pageResponseDto;
     }
 
 

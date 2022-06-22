@@ -9,16 +9,13 @@ public class ConfirmPasswordValidator implements ConstraintValidator<ConfirmPass
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        return value == null ? false : validate(value);
+        return value != null && validate(value);
     }
 
     private boolean validate(Object value) {
         SignUpDto signUpDto = (SignUpDto) value;
-        if (signUpDto.getPassword() == null
-                || signUpDto.getConfirmPassword() == null
-                || !signUpDto.getConfirmPassword().equals(signUpDto.getPassword())) {
-            return false;
-        }
-        return true;
+        return null != signUpDto.getPassword()
+                && signUpDto.getConfirmPassword() != null
+                && signUpDto.getConfirmPassword().equals(signUpDto.getPassword());
     }
 }

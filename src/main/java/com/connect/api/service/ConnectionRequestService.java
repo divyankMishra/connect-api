@@ -12,4 +12,6 @@ public interface ConnectionRequestService {
     ConnectionRequestDto createConnectionRequest(ConnectionRequestPayloadDto requestPayload);
 
     void removeConnectionRequest(Long id);
+
+    boolean connectionRequestAction(Boolean accept, Long id);
 }

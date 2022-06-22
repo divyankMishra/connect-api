@@ -2,6 +2,7 @@ package com.connect.api.controller;
 
 import com.connect.api.dto.connection.ConnectionRequestDto;
 import com.connect.api.dto.payload.request.ConnectionRequestPayloadDto;
+import com.connect.api.dto.payload.request.RequestActionPayloadDto;
 import com.connect.api.dto.payload.response.PageResponseDto;
 import com.connect.api.service.ConnectionRequestService;
 import com.connect.api.util.ErrorUtil;
@@ -16,7 +17,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/requests")
 public class ConnectionRequestController {
-    ConnectionRequestService connectionRequestService;
+    private final ConnectionRequestService connectionRequestService;
 
     @Autowired
     public ConnectionRequestController(ConnectionRequestService connectionRequestService) {
@@ -39,13 +40,15 @@ public class ConnectionRequestController {
 
     @PostMapping
     ResponseEntity<Object> createRequest(@Valid @RequestBody ConnectionRequestPayloadDto requestPayload, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) ErrorUtil.bindingErrors(bindingResult);
+        if (bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
         return new ResponseEntity<>(connectionRequestService.createConnectionRequest(requestPayload), HttpStatus.CREATED);
     }
 
-    @PutMapping
-    ResponseEntity<String> updateRequest() {
-        return ResponseEntity.notFound().build();
+    @PostMapping("/{id}")
+    ResponseEntity<Object> acceptRejectRequest(@Valid @RequestBody RequestActionPayloadDto action, BindingResult bindingResult, @PathVariable("id") Long id) {
+        if (bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
+        return connectionRequestService.connectionRequestAction(action.accept(), id) ? new ResponseEntity<>(HttpStatus.CREATED) : ResponseEntity.noContent().build();
+
     }
 
     @DeleteMapping("/{id}")

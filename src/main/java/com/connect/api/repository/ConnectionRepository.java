@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
 @Repository
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
@@ -17,8 +18,5 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     List<User> findConnectionsByUser(@NonNull User user);
 
     List<User> findConnectionsByUser(@NonNull User user, Pageable pageable);
-
-
-//@TODO figure out this connection / connection request group / group request
 
 }

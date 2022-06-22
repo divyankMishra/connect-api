@@ -35,7 +35,7 @@ public class PostController {
         return postService.getPost(id);
     }
 
-    @PostMapping//@TODO Have to manage payload validation in all controllers.
+    @PostMapping
     ResponseEntity<Object> createPost(@Valid @RequestBody PostPayloadDto postPayloadDto, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
         return new ResponseEntity<>(postService.createPost(postPayloadDto), HttpStatus.CREATED);

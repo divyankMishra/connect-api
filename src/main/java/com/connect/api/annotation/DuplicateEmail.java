@@ -9,9 +9,9 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = DuplicateEmailValidator.class)
 public @interface DuplicateEmail {
-    public String message() default "This email already exists!";
+    String message() default "This email already exists!";
 
-    public Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-    public Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }

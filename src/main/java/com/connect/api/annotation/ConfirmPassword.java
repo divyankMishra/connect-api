@@ -9,9 +9,9 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = ConfirmPasswordValidator.class)
 public @interface ConfirmPassword {
-    public String message() default "Passwords should be same!";
+    String message() default "Passwords should be same!";
 
-    public Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-    public Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }

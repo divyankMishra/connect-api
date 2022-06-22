@@ -97,9 +97,4 @@ public class Post {
         this.id = id;
     }
 
-    @PostLoad
-    public void postLoad() {
-
-
-    }
 }

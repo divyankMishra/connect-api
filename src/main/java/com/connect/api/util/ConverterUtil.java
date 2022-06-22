@@ -13,7 +13,6 @@ import com.connect.api.model.post.Like;
 import com.connect.api.model.post.Post;
 
 public class ConverterUtil {
-
     public static CommentDto getCommentDto(Comment comment) {
         return CommentDto
                 .builder()
@@ -36,7 +35,7 @@ public class ConverterUtil {
                 new UserMinDto(group.getAdmin())
                 , group.getCreatedAt()
                 , group.getName()
-                , group.getDescription(),null);
+                , group.getDescription(), null);
     }
 
     public static PostDto getPostDto(Post post) {

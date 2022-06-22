@@ -46,8 +46,7 @@ public class AuthController {
         UserDto user = authService.signup(signup);
         String token = jwtTokenUtil.generateToken(userService.loadUserByUsername(user.getUsername()));
         setTokenCookie(response, token);
-        ResponseEntity<Object> responseObj = ResponseEntity.ok().body(user);
-        return responseObj;
+        return ResponseEntity.ok().body(user);
     }
 
     private void setTokenCookie(HttpServletResponse response, String token) {

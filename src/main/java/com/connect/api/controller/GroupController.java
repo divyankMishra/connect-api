@@ -33,7 +33,7 @@ public class GroupController {
 
     @PostMapping
     ResponseEntity<Object> createGroup(@Valid @RequestBody GroupPayloadDto groupPayloadDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) ErrorUtil.bindingErrors(bindingResult);
+        if (bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
         return new ResponseEntity<>(groupService.createGroup(groupPayloadDto), HttpStatus.CREATED);
     }
 
@@ -44,12 +44,13 @@ public class GroupController {
 
     @PutMapping("/{id}")
     ResponseEntity<Object> updateGroup(@Valid @RequestBody GroupPayloadDto groupPayloadDto, BindingResult bindingResult, @PathVariable("id") Long id) {
-        if (bindingResult.hasErrors()) ErrorUtil.bindingErrors(bindingResult);
-        return new ResponseEntity<>(groupService.updateGroup(groupPayloadDto,id), HttpStatus.OK);
+        if (bindingResult.hasErrors()) return ErrorUtil.bindingErrors(bindingResult);
+        return new ResponseEntity<>(groupService.updateGroup(groupPayloadDto, id), HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
     ResponseEntity<Object> deleteGroup(@PathVariable("id") Long id) {
         groupService.deleteGroup(id);
-        return  ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 }
