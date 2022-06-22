@@ -1,10 +1,12 @@
 package com.connect.api.util;
 
+import com.connect.api.dto.connection.ConnectionRequestDto;
 import com.connect.api.dto.group.GroupDto;
 import com.connect.api.dto.post.CommentDto;
 import com.connect.api.dto.post.LikeDto;
 import com.connect.api.dto.post.PostDto;
 import com.connect.api.dto.post.UserMinDto;
+import com.connect.api.model.connection.ConnectionRequest;
 import com.connect.api.model.group.Group;
 import com.connect.api.model.post.Comment;
 import com.connect.api.model.post.Like;
@@ -51,5 +53,11 @@ public class ConverterUtil {
                         ? post.getGroup().getName()
                         : null
         );
+    }
+
+    public static ConnectionRequestDto getConnectionRequestDto(boolean populateSender, ConnectionRequest content) {
+        return new ConnectionRequestDto(content.getId(),
+                populateSender ? new UserMinDto(content.getSender()) : null, !populateSender ? new UserMinDto(content.getReceiver()) : null,
+                content.getCreatedAt(), content.getStatus());
     }
 }
