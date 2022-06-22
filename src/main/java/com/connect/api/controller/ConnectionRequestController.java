@@ -12,7 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/requests")
@@ -28,29 +27,29 @@ public class ConnectionRequestController {
     PageResponseDto<ConnectionRequestDto> getConnectionRequests(@RequestParam(defaultValue = "0") int page,
                                                                 @RequestParam(defaultValue = "3") int size,
                                                                 @RequestParam(defaultValue = "id") String[] sort) {
-        return connectionRequestService.getConnectionRequests(page,size,sort);
+        return connectionRequestService.getConnectionRequests(page, size, sort);
     }
 
     @GetMapping("/sent")
     PageResponseDto<ConnectionRequestDto> getSentConnectionRequests(@RequestParam(defaultValue = "0") int page,
-                                                                @RequestParam(defaultValue = "3") int size,
-                                                                @RequestParam(defaultValue = "id") String[] sort) {
-        return connectionRequestService.getSentConnectionRequests(page,size,sort);
+                                                                    @RequestParam(defaultValue = "3") int size,
+                                                                    @RequestParam(defaultValue = "id") String[] sort) {
+        return connectionRequestService.getSentConnectionRequests(page, size, sort);
     }
 
     @PostMapping
     ResponseEntity<Object> createRequest(@Valid @RequestBody ConnectionRequestPayloadDto requestPayload, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) ErrorUtil.bindingErrors(bindingResult);
+        if (bindingResult.hasErrors()) ErrorUtil.bindingErrors(bindingResult);
         return new ResponseEntity<>(connectionRequestService.createConnectionRequest(requestPayload), HttpStatus.CREATED);
     }
 
     @PutMapping
-    ResponseEntity<String> updateRequest(){
+    ResponseEntity<String> updateRequest() {
         return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Object> removeRequest(@PathVariable("id") Long id){
+    ResponseEntity<Object> removeRequest(@PathVariable("id") Long id) {
         connectionRequestService.removeConnectionRequest(id);
         return ResponseEntity.noContent().build();
     }

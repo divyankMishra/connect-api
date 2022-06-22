@@ -1,6 +1,5 @@
 package com.connect.api.filter;
 
-import com.connect.api.model.User;
 import com.connect.api.service.UserService;
 import com.connect.api.util.Constants;
 import com.connect.api.util.JwtTokenUtil;
@@ -10,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 

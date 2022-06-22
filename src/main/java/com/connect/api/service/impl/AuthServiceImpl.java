@@ -1,8 +1,8 @@
 package com.connect.api.service.impl;
 
+import com.connect.api.dto.UserDto;
 import com.connect.api.dto.payload.request.SignInDto;
 import com.connect.api.dto.payload.request.SignUpDto;
-import com.connect.api.dto.UserDto;
 import com.connect.api.model.User;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.AuthService;

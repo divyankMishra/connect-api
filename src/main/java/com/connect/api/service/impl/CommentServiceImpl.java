@@ -2,7 +2,6 @@ package com.connect.api.service.impl;
 
 import com.connect.api.dto.payload.request.CommentPayloadDto;
 import com.connect.api.dto.post.CommentDto;
-import com.connect.api.dto.post.UserMinDto;
 import com.connect.api.model.post.Comment;
 import com.connect.api.repository.CommentRepository;
 import com.connect.api.repository.PostRepository;

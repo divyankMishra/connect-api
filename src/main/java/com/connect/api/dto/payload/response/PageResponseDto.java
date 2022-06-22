@@ -1,6 +1,5 @@
 package com.connect.api.dto.payload.response;
 
-import com.connect.api.dto.post.LikeDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.connect.api.repository;
 
-import com.connect.api.model.connection.Connection;
 import com.connect.api.model.User;
+import com.connect.api.model.connection.Connection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;

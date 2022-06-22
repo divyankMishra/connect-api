@@ -3,7 +3,6 @@ package com.connect.api.model.group;
 import com.connect.api.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;

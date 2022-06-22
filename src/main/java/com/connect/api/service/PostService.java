@@ -2,7 +2,6 @@ package com.connect.api.service;
 
 import com.connect.api.dto.payload.request.PostPayloadDto;
 import com.connect.api.dto.post.PostDto;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
