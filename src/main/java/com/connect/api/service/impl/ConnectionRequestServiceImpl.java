@@ -67,7 +67,6 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
             return;
         }
         throw new RuntimeException("This user is not authorized for this action");
-
     }
 
     @Override
