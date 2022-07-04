@@ -9,6 +9,7 @@ import com.connect.api.repository.GroupRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.GroupService;
 import com.connect.api.util.ConverterUtil;
+import com.connect.api.util.Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,7 +49,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDto createGroup(GroupPayloadDto groupPayloadDto) {
-        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUserName = Util.getCurrentUserName();
         Set<String> membersToBeAdded = new HashSet<>();
         membersToBeAdded.add(currentUserName);
         if (CollectionUtils.isNotEmpty(groupPayloadDto.getMemberUsernames()))
@@ -76,7 +77,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDto updateGroup(GroupPayloadDto groupPayloadDto, Long id) {
-        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUserName = Util.getCurrentUserName();
         Group group = groupRepository.findById(id).orElseThrow();
         if (!userRepository.findByUsername(currentUserName).equals(group.getAdmin()))
             throw new RuntimeException("Non Admin user can not edit group.");
@@ -90,7 +91,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void deleteGroup(Long id) {
-        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUserName = Util.getCurrentUserName();
         Group group = groupRepository.findById(id).orElseThrow();
         if(!userRepository.findByUsername(currentUserName).equals(group.getAdmin())) throw new RuntimeException("Only Admin can remove group!");
         groupRepository.delete(group);

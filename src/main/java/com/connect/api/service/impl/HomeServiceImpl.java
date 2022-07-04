@@ -9,11 +9,11 @@ import com.connect.api.repository.PostRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.HomeService;
 import com.connect.api.util.ConverterUtil;
+import com.connect.api.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,12 +36,8 @@ public class HomeServiceImpl implements HomeService {
     @Override
     public HomeDto getHomePage() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Post> posts = postRepository.findDistinctByUser_IdOrUser_IdInOrGroup_IdInOrderByCreatedAtDesc(userRepository.findByUsername(getCurrentUserName()).getId(), connectionRepository.findDistinctByUser_Username(getCurrentUserName()), null, pageable);
+        Page<Post> posts = postRepository.findDistinctByUser_IdOrUser_IdInOrGroup_IdInOrderByCreatedAtDesc(userRepository.findByUsername(Util.getCurrentUserName()).getId(), connectionRepository.findDistinctByUser_Username(Util.getCurrentUserName()), null, pageable);
         List<PostDto> firstPosts = posts.getContent().stream().map(ConverterUtil::getPostDto).toList();
-        return new HomeDto(new UserMinDto(userRepository.findByUsername(getCurrentUserName())), firstPosts, null);
-    }
-
-    private String getCurrentUserName() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+        return new HomeDto(new UserMinDto(userRepository.findByUsername(Util.getCurrentUserName())), firstPosts, null);
     }
 }

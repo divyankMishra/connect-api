@@ -8,11 +8,11 @@ import com.connect.api.model.connection.Connection;
 import com.connect.api.repository.ConnectionRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.ConnectionService;
+import com.connect.api.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,7 +31,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Override
     public PageResponseDto<ConnectionDto> getCurrentUserConnections(Pageable pageable) {
-        User currentUser = userRepository.findByUsername(getCurrentUsername());
+        User currentUser = userRepository.findByUsername(Util.getCurrentUserName());
         Page<Connection> connections = connectionRepository.findConnectionsByUser(currentUser, pageable);
         return getConnectionDtoPage(connections);
     }
@@ -46,7 +46,4 @@ public class ConnectionServiceImpl implements ConnectionService {
                 page.getContent().stream().map(el -> new ConnectionDto(el.getId(), new UserMinDto(el.getConnection()), el.getCreatedAt())).toList());
     }
 
-    private String getCurrentUsername() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
 }

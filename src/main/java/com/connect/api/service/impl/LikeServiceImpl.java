@@ -9,6 +9,7 @@ import com.connect.api.repository.PostRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.LikeService;
 import com.connect.api.util.ConverterUtil;
+import com.connect.api.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +41,7 @@ public class LikeServiceImpl implements LikeService {
     public PageResponseDto<LikeDto> getLikes(Long postId, Integer pageNo, Integer pageSize, String sortBy) {
         Pageable pageableReq = PageRequest.of(pageNo, pageSize, Sort.Direction.DESC, sortBy);
         Page<Like> page = likeRepository.findLikesByPost_Id(postId, pageableReq);
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Util.getCurrentUserName();
         Optional<Like> like = likeRepository.findLikesByPost_IdAndUser_Username(postId, username);
         return getLikeDtoPageResponseDto(page, like);
     }
@@ -59,7 +60,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public boolean like(Long postId) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Util.getCurrentUserName();
         Optional<Like> like = likeRepository.findLikesByPost_IdAndUser_Username(postId, username);
         if (like.isPresent()) {
             likeRepository.delete(like.get());
@@ -76,7 +77,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public LikeResponseDto getLikeCount(Long postId) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Util.getCurrentUserName();
         Optional<Like> like = likeRepository.findLikesByPost_IdAndUser_Username(postId, username);
         return new LikeResponseDto(like.isPresent(), likeRepository.countLikesByPost_Id(postId));
     }

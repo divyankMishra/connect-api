@@ -8,6 +8,7 @@ import com.connect.api.repository.PostRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.PostService;
 import com.connect.api.util.ConverterUtil;
+import com.connect.api.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class PostServiceImpl implements PostService {
                 .group(postPayloadDto.getGroupId() == null
                         ? null
                         : groupRepository.findById(postPayloadDto.getGroupId()).orElse(null))
-                .user(userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()))
+                .user(userRepository.findByUsername(Util.getCurrentUserName()))
                 .build();
         return ConverterUtil.getPostDto(postRepository.save(post));
     }
@@ -72,6 +73,6 @@ public class PostServiceImpl implements PostService {
     }
 
     private boolean isOwnerUser(Post post) {
-        return post.getUser().equals(userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
+        return post.getUser().equals(userRepository.findByUsername(Util.getCurrentUserName()));
     }
 }

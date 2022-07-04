@@ -12,13 +12,13 @@ import com.connect.api.repository.ConnectionRequestRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.ConnectionRequestService;
 import com.connect.api.util.ConverterUtil;
+import com.connect.api.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -43,7 +43,7 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
 
     @Override
     public ConnectionRequestDto createConnectionRequest(ConnectionRequestPayloadDto connectionRequest) {
-        User sender = userRepository.findByUsername(getUsername());
+        User sender = userRepository.findByUsername(Util.getCurrentUserName());
         User receiver = userRepository.findByUsername(connectionRequest.getUsername());
         //TODO Under normal scenario we will not render or show user who are already connection
         // or have their connection request in database. Meaning to reach here one will have to make explicit api call to check this scenario.
@@ -60,7 +60,7 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
 
     @Override
     public void removeConnectionRequest(Long id) {
-        User currentUser = userRepository.findByUsername(getUsername());
+        User currentUser = userRepository.findByUsername(Util.getCurrentUserName());
         ConnectionRequest request = connectionRequestRepository.findById(id).orElseThrow();
         if (request.getSender().equals(currentUser) || request.getReceiver().equals(currentUser)) {
             connectionRequestRepository.delete(request);
@@ -72,7 +72,7 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
     @Override
     public boolean connectionRequestAction(Boolean accept, Long id) {
         ConnectionRequest connectionRequest = connectionRequestRepository.findById(id).orElseThrow();
-        User user = userRepository.findByUsername(getUsername());
+        User user = userRepository.findByUsername(Util.getCurrentUserName());
         if (!connectionRequest.getReceiver().equals(user))
             throw new RuntimeException("Only receiver can accept request.");
         if (accept) {
@@ -97,7 +97,7 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
 
     @Override
     public PageResponseDto<ConnectionRequestDto> getConnectionRequests(int page, int size, String[] sort) {
-        return getConnectionRequestDtoPageResponseDto(connectionRequestRepository.findByReceiver_Username(getUsername(), getPageable(page, size, sort)), true);
+        return getConnectionRequestDtoPageResponseDto(connectionRequestRepository.findByReceiver_Username(Util.getCurrentUserName(), getPageable(page, size, sort)), true);
     }
 
     //TODO this can be reused in pagination everywhere but let's try passing pageable directly in controller param and see
@@ -110,13 +110,10 @@ public class ConnectionRequestServiceImpl implements ConnectionRequestService {
         return PageRequest.of(page, size, Sort.by(sortOrder));
     }
 
-    private String getUsername() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
 
     @Override
     public PageResponseDto<ConnectionRequestDto> getSentConnectionRequests(int page, int size, String[] sort) {
-        return getConnectionRequestDtoPageResponseDto(connectionRequestRepository.findBySender_Username(getUsername(), getPageable(page, size, sort)), false);
+        return getConnectionRequestDtoPageResponseDto(connectionRequestRepository.findBySender_Username(Util.getCurrentUserName(), getPageable(page, size, sort)), false);
     }
 
     private PageResponseDto<ConnectionRequestDto> getConnectionRequestDtoPageResponseDto(Page<ConnectionRequest> page, boolean populateSender) {

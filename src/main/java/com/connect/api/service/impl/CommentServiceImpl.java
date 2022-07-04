@@ -8,6 +8,7 @@ import com.connect.api.repository.PostRepository;
 import com.connect.api.repository.UserRepository;
 import com.connect.api.service.CommentService;
 import com.connect.api.util.ConverterUtil;
+import com.connect.api.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
         Comment newComment = Comment.builder()
                 .comment(comment.comment())
                 .createdAt(new Date())
-                .user(userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()))
+                .user(userRepository.findByUsername(Util.getCurrentUserName()))
                 .post(postRepository.findById(postId).orElseThrow())
                 .build();
         Comment savedComment = commentRepository.save(newComment);
@@ -68,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private boolean isOwnerUser(Comment comment) {
-        return comment.getUser().equals(userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()));
+        return comment.getUser().equals(userRepository.findByUsername(Util.getCurrentUserName()));
     }
 
 
