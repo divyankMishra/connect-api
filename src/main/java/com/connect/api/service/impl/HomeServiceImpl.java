@@ -36,7 +36,11 @@ public class HomeServiceImpl implements HomeService {
     @Override
     public HomeDto getHomePage() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Post> posts = postRepository.findDistinctByUser_IdOrUser_IdInOrGroup_IdInOrderByCreatedAtDesc(userRepository.findByUsername(Util.getCurrentUserName()).getId(), connectionRepository.findDistinctByUser_Username(Util.getCurrentUserName()), null, pageable);
+        Page<Post> posts = postRepository.findDistinctByUser_IdOrUser_IdInOrGroup_IdInOrderByCreatedAtDesc(
+                userRepository.findByUsername(Util.getCurrentUserName()).getId()
+                , connectionRepository.findDistinctByUser_Username(Util.getCurrentUserName())
+                , null
+                , pageable);
         List<PostDto> firstPosts = posts.getContent().stream().map(ConverterUtil::getPostDto).toList();
         return new HomeDto(new UserMinDto(userRepository.findByUsername(Util.getCurrentUserName())), firstPosts, null);
     }
