@@ -50,7 +50,8 @@ public class ConverterUtil {
                         : null,
                 post.getGroup() != null
                         ? post.getGroup().getName()
-                        : null
+                        : null,
+                null,null
         );
     }
 

@@ -1,33 +1,38 @@
 package com.connect.api.service.impl;
 
 import com.connect.api.dto.payload.request.PostPayloadDto;
+import com.connect.api.dto.payload.response.PageResponseDto;
 import com.connect.api.dto.post.PostDto;
 import com.connect.api.model.post.Post;
-import com.connect.api.repository.GroupRepository;
-import com.connect.api.repository.PostRepository;
-import com.connect.api.repository.UserRepository;
+import com.connect.api.repository.*;
 import com.connect.api.service.PostService;
 import com.connect.api.util.ConverterUtil;
 import com.connect.api.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
+    private final ConnectionRepository connectionRepository;
+    private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
 
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, GroupRepository groupRepository, UserRepository userRepository) {
+    public PostServiceImpl(PostRepository postRepository, GroupRepository groupRepository, UserRepository userRepository, ConnectionRepository connectionRepository, CommentRepository commentRepository, LikeRepository likeRepository) {
         this.postRepository = postRepository;
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
+        this.connectionRepository = connectionRepository;
+        this.commentRepository = commentRepository;
+        this.likeRepository = likeRepository;
     }
 
     @Override
@@ -36,9 +41,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        return postRepository.findAll().stream().map(ConverterUtil::getPostDto).toList();
+    public PageResponseDto<PostDto> getAllPosts(Pageable pageable) {
+        Page<Post> page = postRepository.findDistinctByUser_IdOrUser_IdInOrGroup_IdInOrderByCreatedAtDesc(
+                userRepository.findByUsername(Util.getCurrentUserName()).getId()
+                , connectionRepository.findDistinctByUser_Username(Util.getCurrentUserName())
+                , null
+                , pageable);
+        return new PageResponseDto<>(page.isLast(),
+                null,
+                page.getTotalElements(),
+                (long) page.getNumberOfElements(),
+                (long) page.getTotalPages(),
+                (long) page.getNumber(),
+                page.getContent().stream().map(ConverterUtil::getPostDto)
+                        .map(el -> Util.populateCommentsAndLikes(el, commentRepository, likeRepository)).toList()
+        );
     }
+
 
     @Override
     public PostDto createPost(PostPayloadDto postPayloadDto) {

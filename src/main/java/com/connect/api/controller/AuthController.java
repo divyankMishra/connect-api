@@ -51,7 +51,7 @@ public class AuthController {
 
     private void setTokenCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie(Constants.JWT, token);
-        cookie.setMaxAge(300);
+        cookie.setMaxAge(9000);
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }

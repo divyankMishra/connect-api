@@ -4,9 +4,7 @@ import com.connect.api.dto.home.HomeDto;
 import com.connect.api.dto.post.PostDto;
 import com.connect.api.dto.post.UserMinDto;
 import com.connect.api.model.post.Post;
-import com.connect.api.repository.ConnectionRepository;
-import com.connect.api.repository.PostRepository;
-import com.connect.api.repository.UserRepository;
+import com.connect.api.repository.*;
 import com.connect.api.service.HomeService;
 import com.connect.api.util.ConverterUtil;
 import com.connect.api.util.Util;
@@ -24,13 +22,19 @@ public class HomeServiceImpl implements HomeService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
+    private final CommentRepository commentRepository;
+
+    private final LikeRepository likeRepository;
+
     private final ConnectionRepository connectionRepository;
 
     @Autowired
-    public HomeServiceImpl(PostRepository postRepository, UserRepository userRepository, ConnectionRepository connectionRepository) {
+    public HomeServiceImpl(PostRepository postRepository, UserRepository userRepository, ConnectionRepository connectionRepository, CommentRepository commentRepository, LikeRepository likeRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.connectionRepository = connectionRepository;
+        this.commentRepository = commentRepository;
+        this.likeRepository = likeRepository;
     }
 
     @Override
@@ -41,7 +45,13 @@ public class HomeServiceImpl implements HomeService {
                 , connectionRepository.findDistinctByUser_Username(Util.getCurrentUserName())
                 , null
                 , pageable);
-        List<PostDto> firstPosts = posts.getContent().stream().map(ConverterUtil::getPostDto).toList();
+        List<PostDto> firstPosts = posts
+                .getContent()
+                .stream()
+                .map(ConverterUtil::getPostDto)
+                .map(el -> Util.populateCommentsAndLikes(el,commentRepository,likeRepository))
+                .toList();
         return new HomeDto(new UserMinDto(userRepository.findByUsername(Util.getCurrentUserName())), firstPosts, null);
     }
+
 }

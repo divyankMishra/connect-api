@@ -10,4 +10,9 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPost(Post post);
+
+    List<Comment> findFirst5DistinctByPost_IdOrderByUpdatedAtDescCreatedAtDesc(Long id);
+
+
+
 }

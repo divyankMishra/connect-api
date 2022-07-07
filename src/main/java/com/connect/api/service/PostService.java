@@ -1,12 +1,12 @@
 package com.connect.api.service;
 
 import com.connect.api.dto.payload.request.PostPayloadDto;
+import com.connect.api.dto.payload.response.PageResponseDto;
 import com.connect.api.dto.post.PostDto;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface PostService {
-    List<PostDto> getAllPosts();
+    PageResponseDto<PostDto> getAllPosts(Pageable pageable);
 
     PostDto createPost(PostPayloadDto postPayloadDto);
 

@@ -10,7 +10,6 @@ import com.connect.api.service.CommentService;
 import com.connect.api.util.ConverterUtil;
 import com.connect.api.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
